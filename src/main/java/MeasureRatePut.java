@@ -1,13 +1,12 @@
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
 
-public class MeasureRate extends TimerTask {
+public class MeasureRatePut extends TimerTask {
 	private static long count;
 	private long lastCount = 0;
 	private Runtime runtime = Runtime.getRuntime();
@@ -19,14 +18,14 @@ public class MeasureRate extends TimerTask {
 	}
 
 	public static void main(String args[]) {
-		TimerTask timerTask = new MeasureRate();
+		TimerTask timerTask = new MeasureRatePut();
 		// running timer task as daemon thread
 		Timer timer = new Timer(true);
 		timer.scheduleAtFixedRate(timerTask, 0, 1000);
 
 		Config config = new Config();
 		HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(config);
-		Map<Long, String> test = hazelcastInstance.getMap("test");
+		IMap<Long, String> test = hazelcastInstance.getMap("test");
 
 		StringBuilder sb = new StringBuilder();
 		// 32 bytes times 32 is 1k. make 1k values
