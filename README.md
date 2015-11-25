@@ -22,6 +22,10 @@ Small tests with Hazelcast.
 * Can scale nodes with MDB, with hazelcast and with both as required.
 * It may be better to separate, and use hazelcast-client in the MDB's, separate hazelcast nodes for processing.
 * Take data partitioning into account to get the processing on the node that contains the data.
+* [Execution](http://docs.hazelcast.org/docs/3.5/manual/html-single/hazelcast-documentation.html#execution): `executorService.submitToKeyOwner( task, key );`
+  * How do we get the key of the queue entry just submitted?
+* Can also use [execution member selection](http://docs.hazelcast.org/docs/3.5/manual/html-single/hazelcast-documentation.html#execution-member-selection).
+* Don't need to be notified on task finish; would be possible with [execution callback](http://docs.hazelcast.org/docs/3.5/manual/html-single/hazelcast-documentation.html#execution-callback).
 
 * Define `executor-pool-size` to set the # of threads per JVM/node.
   * Don't overdo, take care that enough capacity remains for WLS itself.
@@ -29,3 +33,25 @@ Small tests with Hazelcast.
   * Separate MDB and Hazelcast nodes reduce the risk for exhausting resource capacity, garbage collection.
   * But more network communication will result. Hard to predict how significant the difference is.
 * Use enough nodes to handle the total load.
+
+* Alternatives/options: 
+  * Just use a bunch of message consumers as part of the hazelcast cluster.
+    * Use multiple threads/consumers per instance.
+  * Use persistent map instead of queue, with entry processor? I don't think it helps in our case.
+  * Distributed queries or indexing not required (?).
+
+* How to run dedicated Hazelcast nodes?
+  * In WLS or java-SE?
+  * Standard but overkill.
+  * 
+  
+
+* The Runnable, or message consumer, does:
+  * Start hz transaction.
+  * Read message.
+  * Process.
+  * Write to DB + commit db.
+  * Commit hz.
+    * DB write might be double in case of crash. I.e. processing + write to DB must be idempotent.
+    * Otherwise, XA would be required including processing that can be rolled back.
+    * 
