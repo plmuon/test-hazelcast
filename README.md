@@ -55,4 +55,9 @@ Small tests with Hazelcast.
   * Commit hz.
     * DB write might be double in case of crash. I.e. processing + write to DB must be idempotent.
     * Otherwise, XA would be required including processing that can be rolled back.
-    * 
+
+From 11.1:
+```
+MapStore and QueueStore does not participate in transactions. Hazelcast will suppress exceptions thrown by store in a transaction. Please refer to the XA Transactions section for further information.
+```
+Unsure what this means in case an exception does happen. Should we hang forever? Is a reliable queue with backing store possible? Must be tested.
