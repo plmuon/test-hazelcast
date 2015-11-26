@@ -11,6 +11,7 @@ Small tests with Hazelcast.
   * Simpler solution.
   * XA is possible, see refman [11.2](http://docs.hazelcast.org/docs/3.5/manual/html-single/hazelcast-documentation.html#xa-transactions).
   * However, [local transactions](http://docs.hazelcast.org/docs/3.5/manual/html-single/hazelcast-documentation.html#local-versus-two-phase) + compensation mechanism should do. Duplicates should not be a problem, can be dealt with.
+    * No: in 11.1 it is mentioned that MapStore and QueueStore do not participate in transactions. Obvious in a way, since XA is required for that. This should not be a problem.
   * Must test persistent queue, crash all nodes (or too many, resulting in lost partitions), then see if lost data are restored from store, or just silently lost.
 * Otherwise, just persist message directly in mdb into db (XA) and do async fetch/process/delete without (expensive).
 
